@@ -1,0 +1,30 @@
+services:
+  - type: web
+    name: certifica-musica-api
+    runtime: node
+    plan: free
+    buildCommand: npm install
+    startCommand: node server.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3001
+      - key: FRONTEND_URL
+        sync: false   # preencher no dashboard com a URL da Vercel
+      - key: JWT_SECRET
+        sync: false   # preencher no dashboard
+      - key: TURSO_DATABASE_URL
+        sync: false
+      - key: TURSO_AUTH_TOKEN
+        sync: false
+      - key: LIGHTHOUSE_API_KEY
+        sync: false
+      - key: INFURA_API_KEY
+        sync: false
+      - key: ETHEREUM_PRIVATE_KEY
+        sync: false
+      - key: CONTRACT_ADDRESS
+        sync: false
+      - key: ETHEREUM_NETWORK
+        value: sepolia
