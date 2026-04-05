@@ -1,0 +1,278 @@
+.nav {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 200;
+  background: rgba(6, 13, 30, 0.7);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid transparent;
+  transition: background 0.3s, border-color 0.3s;
+}
+
+.navScrolled {
+  background: rgba(6, 13, 30, 0.95);
+  border-bottom-color: var(--border);
+}
+
+.container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 28px;
+  height: 68px;
+  display: flex;
+  align-items: center;
+  gap: 32px;
+}
+
+/* ── Logo ── */
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: -0.3px;
+  color: #fff;
+  flex-shrink: 0;
+}
+
+.logoIcon {
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+}
+
+.logoIcon svg { width: 100%; height: 100%; }
+.logoAccent { color: var(--accent-cyan); }
+
+/* ── Desktop links ── */
+.links {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  list-style: none;
+  flex: 1;
+}
+
+.navLink {
+  display: block;
+  color: var(--text-secondary);
+  font-size: 14px;
+  font-weight: 500;
+  padding: 8px 12px;
+  border-radius: 8px;
+  transition: color 0.2s, background 0.2s;
+}
+
+.navLink:hover { color: #fff; background: rgba(255,255,255,0.05); }
+.active { color: var(--accent-cyan) !important; }
+
+/* ── Desktop actions ── */
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.userName {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  padding: 0 4px;
+}
+
+.btnEntrar {
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+  font-size: 14px;
+  font-weight: 500;
+  padding: 8px 18px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.2s;
+}
+
+.btnEntrar:hover { border-color: rgba(255,255,255,0.2); color: #fff; }
+
+.btnCriar {
+  background: rgba(26, 106, 255, 0.12);
+  border: 1px solid var(--border-cyan);
+  color: var(--accent-cyan);
+  font-size: 14px;
+  font-weight: 600;
+  padding: 8px 18px;
+  border-radius: 8px;
+  transition: all 0.2s;
+}
+
+.btnCriar:hover { background: rgba(26, 106, 255, 0.2); }
+
+.btnRegistrar {
+  background: var(--accent-cyan);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 9px 18px;
+  border-radius: 8px;
+  transition: opacity 0.2s, transform 0.2s;
+  white-space: nowrap;
+}
+
+.btnRegistrar:hover { opacity: 0.9; transform: translateY(-1px); }
+
+/* ── Hamburger ── */
+.hamburger {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  width: 36px;
+  height: 36px;
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  cursor: pointer;
+  padding: 0;
+  flex-shrink: 0;
+}
+
+.hamburger span {
+  display: block;
+  width: 18px;
+  height: 2px;
+  background: var(--text-secondary);
+  border-radius: 2px;
+  transition: all 0.25s ease;
+  transform-origin: center;
+}
+
+.hamburgerOpen span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.hamburgerOpen span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+.hamburgerOpen span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+/* ── Drawer ── */
+.drawer {
+  display: none;
+  flex-direction: column;
+  gap: 4px;
+  padding: 16px 20px 28px;
+  border-top: 1px solid var(--border);
+  background: rgba(6, 13, 30, 0.98);
+  position: absolute;
+  top: 68px;
+  left: 0;
+  right: 0;
+  transform: translateY(-8px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.drawerOpen { opacity: 1; transform: translateY(0); pointer-events: auto; }
+
+.drawerLink {
+  color: var(--text-secondary);
+  font-size: 16px;
+  font-weight: 500;
+  padding: 12px 8px;
+  border-radius: 8px;
+  transition: color 0.2s, background 0.2s;
+}
+
+.drawerLink:hover { color: #fff; background: rgba(255,255,255,0.04); }
+
+.drawerBtn {
+  display: block;
+  background: var(--accent-cyan);
+  color: #fff;
+  font-weight: 700;
+  font-size: 15px;
+  padding: 14px;
+  border-radius: 10px;
+  text-align: center;
+  transition: opacity 0.2s;
+}
+
+.drawerBtn:hover { opacity: 0.9; }
+
+.drawerDivider {
+  height: 1px;
+  background: var(--border);
+  margin: 6px 0;
+}
+
+.drawerUser {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px;
+}
+
+.drawerUserName { font-size: 14px; font-weight: 600; color: var(--text-secondary); }
+
+.drawerLogout {
+  background: none;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: var(--danger);
+  font-size: 13px;
+  font-weight: 600;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.2s;
+}
+
+.drawerLogout:hover { background: rgba(239, 68, 68, 0.1); }
+
+.drawerAuthRow {
+  display: flex;
+  gap: 10px;
+  padding: 4px 8px;
+}
+
+.drawerEntrar {
+  flex: 1;
+  text-align: center;
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+  font-size: 14px;
+  font-weight: 600;
+  padding: 11px;
+  border-radius: 9px;
+}
+
+.drawerCriar {
+  flex: 1;
+  text-align: center;
+  background: var(--accent-cyan);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  padding: 11px;
+  border-radius: 9px;
+}
+
+/* Overlay */
+.overlay {
+  display: none;
+  position: fixed;
+  inset: 68px 0 0 0;
+  background: rgba(0,0,0,0.6);
+  z-index: 199;
+}
+
+/* ── Responsive ── */
+@media (max-width: 900px) {
+  .links { display: none; }
+  .actions { display: none; }
+  .hamburger { display: flex; }
+  .drawer { display: flex; }
+  .overlay { display: block; }
+  .container { gap: 0; justify-content: space-between; }
+}

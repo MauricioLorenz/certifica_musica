@@ -1,0 +1,69 @@
+# ================================================================
+# Certifica Música — .gitignore
+# ================================================================
+
+# Variáveis de ambiente (NUNCA commitar!)
+.env
+.env.local
+.env.*.local
+
+# Dependências
+node_modules/
+frontend/node_modules/
+
+# Build do frontend
+frontend/dist/
+frontend/dist-ssr/
+
+# Uploads de arquivos locais
+uploads/
+temp/
+tmp/
+
+# Logs
+*.log
+logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Banco de dados local
+*.sqlite
+*.db
+mongodb/
+
+# IDEs e editores
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Cache
+.cache/
+.parcel-cache/
+.vite/
+
+# Cobertura de testes
+coverage/
+.nyc_output/
+
+# Hardhat / Solidity
+cache/
+artifacts/
+
+# Misc
+*.pem
+
+# Arquivos internos / Claude
+.claude/
+canva_design_skill.md
+full_stack_skill.md
+TrackLock-DiscoveryGuide.md
+gitignore
+
+# Lock files (opcional — remova estas linhas se quiser commitar)
+package-lock.json
+frontend/package-lock.json

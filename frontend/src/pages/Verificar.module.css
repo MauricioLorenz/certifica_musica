@@ -1,0 +1,215 @@
+.main { padding-top: 68px; min-height: 100vh; }
+
+.container {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 48px 24px;
+}
+
+.header { text-align: center; margin-bottom: 40px; }
+
+.badge {
+  display: inline-block;
+  background: var(--accent-cyan-dim);
+  border: 1px solid var(--border-cyan);
+  color: var(--accent-cyan);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 6px 16px;
+  border-radius: 100px;
+  margin-bottom: 16px;
+  letter-spacing: 0.5px;
+}
+
+.title {
+  font-size: 36px;
+  font-weight: 800;
+  letter-spacing: -1px;
+  margin-bottom: 10px;
+}
+
+.subtitle { color: var(--text-secondary); font-size: 15px; }
+
+/* Search */
+.searchBox {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 32px;
+}
+
+.input {
+  flex: 1;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 18px;
+  color: var(--text-primary);
+  font-size: 15px;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.input:focus { border-color: var(--accent-cyan); }
+.input::placeholder { color: var(--text-muted); }
+
+.btnBuscar {
+  background: var(--accent-cyan);
+  color: #0d0f14;
+  font-weight: 700;
+  font-size: 14px;
+  padding: 14px 28px;
+  border-radius: 10px;
+  border: none;
+  transition: opacity 0.2s;
+  white-space: nowrap;
+}
+
+.btnBuscar:hover { opacity: 0.88; }
+.btnBuscar:disabled { opacity: 0.5; }
+
+.erro {
+  background: rgba(255, 77, 109, 0.1);
+  border: 1px solid rgba(255, 77, 109, 0.2);
+  color: var(--danger);
+  padding: 14px 18px;
+  border-radius: 10px;
+  margin-bottom: 24px;
+  font-size: 14px;
+}
+
+/* Resultado */
+.resultado {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.statusRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.statusBadge {
+  background: rgba(0, 196, 140, 0.12);
+  border: 1px solid rgba(0, 196, 140, 0.25);
+  color: var(--success);
+  font-size: 13px;
+  font-weight: 700;
+  padding: 6px 16px;
+  border-radius: 100px;
+}
+
+.dataReg { color: var(--text-muted); font-size: 13px; }
+
+/* Seções */
+.secao {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 24px;
+}
+
+.secaoTitulo {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--accent-cyan);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 20px;
+}
+
+/* Grid de campos */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.campo { display: flex; flex-direction: column; gap: 4px; }
+
+.campoLabel {
+  font-size: 11px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  font-weight: 600;
+}
+
+.campoValor {
+  font-size: 15px;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.destaque {
+  color: var(--accent-cyan);
+  font-weight: 700;
+  font-family: monospace;
+  font-size: 14px;
+}
+
+/* Autores */
+.autorCard {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 18px;
+  margin-bottom: 10px;
+}
+
+.autorNome { font-weight: 700; font-size: 15px; margin-bottom: 4px; }
+.autorDetalhes { font-size: 13px; color: var(--text-muted); }
+
+.semDados { color: var(--text-muted); font-size: 14px; }
+
+/* Blockchain */
+.blockchainBox { display: flex; flex-direction: column; gap: 14px; }
+
+.hashRow { display: flex; flex-direction: column; gap: 4px; }
+
+.hashLabel {
+  font-size: 11px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  font-weight: 600;
+}
+
+.hashValue {
+  font-family: monospace;
+  font-size: 13px;
+  color: var(--text-secondary);
+  word-break: break-all;
+}
+
+.divider {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 4px 0;
+}
+
+.btnLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--accent-cyan-dim);
+  border: 1px solid var(--border-cyan);
+  color: var(--accent-cyan);
+  font-weight: 600;
+  font-size: 14px;
+  padding: 10px 20px;
+  border-radius: 10px;
+  transition: background 0.2s;
+  width: fit-content;
+}
+
+.btnLink:hover { background: rgba(0, 210, 212, 0.2); }
+
+@media (max-width: 600px) {
+  .grid { grid-template-columns: 1fr; }
+  .searchBox { flex-direction: column; }
+}
