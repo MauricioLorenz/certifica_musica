@@ -27,9 +27,11 @@ app.use(cors({
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
-// Pasta uploads
-const uploadsDir = path.join(__dirname, 'uploads');
-if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir);
+// Pasta uploads (apenas em desenvolvimento — na Vercel usa /tmp)
+if (process.env.NODE_ENV !== 'production') {
+  const uploadsDir = path.join(__dirname, 'uploads');
+  if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir);
+}
 
 // Routes
 app.use('/api/auth', require('./routes/auth'));
@@ -51,20 +53,23 @@ app.use((err, req, res, next) => {
   res.status(500).json({ erro: err.message || 'Erro interno do servidor' });
 });
 
-const PORT = process.env.PORT || 3001;
+// Inicializa o banco na importação do módulo (funciona em serverless e local)
+const dbReady = initDB().catch((err) => {
+  console.error('❌ Falha ao inicializar Turso:', err.message);
+  if (require.main === module) process.exit(1);
+});
 
-const iniciar = async () => {
-  try {
-    await initDB();
+// Desenvolvimento local: sobe o servidor HTTP
+if (require.main === module) {
+  const PORT = process.env.PORT || 3001;
+  dbReady.then(() => {
     app.listen(PORT, () => {
       console.log(`\n🚀 Certifica Música Backend rodando em http://localhost:${PORT}`);
       console.log(`🗄️  Banco: Turso — ${process.env.TURSO_DATABASE_URL}`);
       console.log(`⛓️  Infura: ${process.env.INFURA_ENDPOINT ? process.env.INFURA_ENDPOINT.substring(0, 40) + '...' : 'não configurado'}\n`);
     });
-  } catch (err) {
-    console.error('❌ Falha ao conectar ao Turso:', err.message);
-    process.exit(1);
-  }
-};
+  });
+}
 
-iniciar();
+// Exporta o app para o Vercel (serverless)
+module.exports = app;

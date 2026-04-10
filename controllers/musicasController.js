@@ -47,9 +47,13 @@ exports.criarMusica = async (req, res) => {
     const arquivos = req.files || {};
     let cid = null, cidIdentidade = null, cidComplementar = null;
 
+    const UPLOADS_DIR = process.env.NODE_ENV === 'production'
+      ? '/tmp'
+      : path.join(__dirname, '../uploads');
+
     const uploadSe = async (campo) => {
       if (!arquivos[campo]?.[0]) return null;
-      const filePath = path.join(__dirname, '../uploads', arquivos[campo][0].filename);
+      const filePath = path.join(UPLOADS_DIR, arquivos[campo][0].filename);
       console.log(`📤 Enviando ${campo} para IPFS...`);
       const r = await lighthouseService.uploadArquivo(filePath);
       return r.cid;
