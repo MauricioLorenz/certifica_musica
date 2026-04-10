@@ -7,6 +7,12 @@ const { initDB } = require('./db/turso');
 
 const app = express();
 
+// Inicializa o banco imediatamente (antes de qualquer rota)
+const dbReady = initDB().catch((err) => {
+  console.error('❌ Falha ao inicializar Turso:', err.message);
+  if (require.main === module) process.exit(1);
+});
+
 // Middlewares
 const allowedOrigins = [
   'http://localhost:3000',
@@ -33,6 +39,17 @@ if (process.env.NODE_ENV !== 'production') {
   if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir);
 }
 
+// Garante que o banco está pronto antes de qualquer requisição (cold start serverless)
+app.use(async (req, res, next) => {
+  try {
+    await dbReady;
+    next();
+  } catch (err) {
+    console.error('❌ Banco não disponível:', err.message);
+    res.status(503).json({ erro: 'Banco de dados não disponível. Verifique as variáveis de ambiente.' });
+  }
+});
+
 // Routes
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/musicas', require('./routes/musicas'));
@@ -51,12 +68,6 @@ app.get('/api/health', (req, res) => {
 app.use((err, req, res, next) => {
   console.error('❌ Erro:', err.message);
   res.status(500).json({ erro: err.message || 'Erro interno do servidor' });
-});
-
-// Inicializa o banco na importação do módulo (funciona em serverless e local)
-const dbReady = initDB().catch((err) => {
-  console.error('❌ Falha ao inicializar Turso:', err.message);
-  if (require.main === module) process.exit(1);
 });
 
 // Desenvolvimento local: sobe o servidor HTTP
