@@ -36,21 +36,21 @@ class EthereumService {
       const tx = await contract.registrar(titulo, compositor, cidPartitura, cidLetra, cidIdentidade, cidComplementar);
 
       console.log(`⏳ Transação enviada: ${tx.hash}`);
-      const receipt = await tx.wait();
-      console.log(`✅ Confirmada no bloco: ${receipt.blockNumber}`);
+      // Não aguardamos a confirmação para evitar timeout em serverless (Vercel)
+      // A tx foi enviada e o hash já é válido; confirmação ocorre on-chain em ~15s
 
       return {
         success: true,
         transaction: {
           txHash: tx.hash,
-          blockNumber: receipt.blockNumber,
+          blockNumber: null,
           titulo,
           compositor,
           cid: cidPartitura,
           timestamp: Math.floor(Date.now() / 1000),
-          status: 'confirmado'
+          status: 'pendente'
         },
-        message: 'Música registrada com sucesso na blockchain'
+        message: 'Transação enviada — confirmação on-chain em andamento'
       };
     } catch (error) {
       console.error('❌ Erro ao registrar:', error.message);

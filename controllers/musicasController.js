@@ -45,7 +45,7 @@ exports.criarMusica = async (req, res) => {
 
     // Upload de todos os arquivos para IPFS
     const arquivos = req.files || {};
-    let cid = null, cidIdentidade = null, cidComplementar = null;
+    let cid = null, cidLetra = null, cidIdentidade = null, cidComplementar = null;
 
     const UPLOADS_DIR = process.env.NODE_ENV === 'production'
       ? '/tmp'
@@ -59,10 +59,14 @@ exports.criarMusica = async (req, res) => {
       return r.cid;
     };
 
-    const cidLetra  = await uploadSe('arquivoLetra');
-    cid             = await uploadSe('arquivoObra') || `QmTL${Math.random().toString(36).substring(2, 12).toUpperCase()}`;
-    cidIdentidade   = await uploadSe('arquivoIdentidade');
-    cidComplementar = await uploadSe('arquivoComplementar');
+    // Uploads em paralelo para reduzir tempo total
+    [cidLetra, cid, cidIdentidade, cidComplementar] = await Promise.all([
+      uploadSe('arquivoLetra'),
+      uploadSe('arquivoObra'),
+      uploadSe('arquivoIdentidade'),
+      uploadSe('arquivoComplementar'),
+    ]);
+    if (!cid) cid = `QmTL${Math.random().toString(36).substring(2, 12).toUpperCase()}`;
 
     const blockchainResult = await ethereumService.registrarMusica(
       titulo, compositor,
@@ -104,7 +108,7 @@ exports.criarMusica = async (req, res) => {
         cidIdentidade,
         cidComplementar,
         blockchainResult.transaction.txHash,
-        'Validado',
+        blockchainResult.transaction.status === 'pendente' ? 'Pendente' : 'Validado',
         1,
         criadoEm,
       ],
