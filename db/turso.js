@@ -6,6 +6,7 @@ const client = createClient({
 });
 
 const initDB = async () => {
+  // Tabela de usuários
   await client.execute(`
     CREATE TABLE IF NOT EXISTS usuarios (
       id TEXT PRIMARY KEY,
@@ -16,6 +17,7 @@ const initDB = async () => {
     )
   `);
 
+  // Tabela principal de músicas (schema base)
   await client.execute(`
     CREATE TABLE IF NOT EXISTS musicas (
       id TEXT PRIMARY KEY,
@@ -35,6 +37,7 @@ const initDB = async () => {
       tipoServico TEXT DEFAULT 'Registro Simples',
       formaPagamento TEXT,
       cid TEXT,
+      cidLetra TEXT,
       cidIdentidade TEXT,
       cidComplementar TEXT,
       txHash TEXT,
@@ -44,15 +47,40 @@ const initDB = async () => {
     )
   `);
 
-  for (const col of ['arquivoLetra', 'cidLetra', 'cidIdentidade', 'cidComplementar', 'usuario_id']) {
-    await client.execute(`ALTER TABLE musicas ADD COLUMN ${col} TEXT`).catch((e) => {
-      if (!e.message?.includes('duplicate column') && !e.message?.includes('already exists')) {
-        console.error(`⚠️  Erro ao adicionar coluna ${col}:`, e.message);
-      }
-    });
+  // Migrations incrementais — adicionam colunas sem recriar a tabela
+  const novasColunas = [
+    // Colunas legadas que podem estar ausentes em instâncias antigas
+    'arquivoLetra TEXT',
+    'cidLetra TEXT',
+    'cidIdentidade TEXT',
+    'cidComplementar TEXT',
+    'usuario_id TEXT',
+    // NFT ERC-721
+    'metadataCID TEXT',
+    'tokenId TEXT',
+    'nftContractAddress TEXT',
+    // Hashes SHA-256 de integridade
+    'hashObra TEXT',
+    'hashLetra TEXT',
+    'hashIdentidade TEXT',
+    'hashComplementar TEXT',
+  ];
+
+  for (const colDef of novasColunas) {
+    const colName = colDef.split(' ')[0];
+    await client
+      .execute(`ALTER TABLE musicas ADD COLUMN ${colDef}`)
+      .catch((e) => {
+        if (
+          !e.message?.includes('duplicate column') &&
+          !e.message?.includes('already exists')
+        ) {
+          console.error(`⚠️  Erro ao adicionar coluna ${colName}:`, e.message);
+        }
+      });
   }
 
-  console.log('✅ Turso: tabelas prontas');
+  console.log('✅ Turso: tabelas e colunas prontas');
 };
 
 module.exports = { client, initDB };
