@@ -159,6 +159,73 @@ export default function Verificar() {
               </div>
             </section>
 
+            {/* NFT ERC-721 */}
+            {obra.tokenId != null && (
+              <section className={styles.secao}>
+                <h2 className={styles.secaoTitulo}>◆ NFT ERC-721</h2>
+                <div className={styles.blockchainBox}>
+                  <div className={styles.hashRow}>
+                    <span className={styles.hashLabel}>Token ID</span>
+                    <span className={styles.hashValue} style={{ color: '#fbbf24', fontWeight: 700, fontSize: '1.1em' }}>#{obra.tokenId}</span>
+                  </div>
+                  <div className={styles.hashRow}>
+                    <span className={styles.hashLabel}>Contrato ERC-721</span>
+                    <span className={styles.hashValue}>{obra.nftContractAddress || '—'}</span>
+                  </div>
+                  {obra.tokenURI && (
+                    <div className={styles.hashRow}>
+                      <span className={styles.hashLabel}>tokenURI (metadata)</span>
+                      <span className={styles.hashValue}>{obra.tokenURI}</span>
+                    </div>
+                  )}
+                  <div className={styles.divider} />
+                  {obra.metadataUrl && (
+                    <a href={obra.metadataUrl} target="_blank" rel="noopener noreferrer" className={styles.btnLink}>
+                      📋 Ver metadata no IPFS
+                    </a>
+                  )}
+                  {obra.openseaUrl && (
+                    <a href={obra.openseaUrl} target="_blank" rel="noopener noreferrer" className={styles.btnLink}>
+                      🌊 Ver NFT no OpenSea
+                    </a>
+                  )}
+                </div>
+              </section>
+            )}
+
+            {/* Integridade SHA-256 */}
+            {(obra.hashObra || obra.hashLetra) && (
+              <section className={styles.secao}>
+                <h2 className={styles.secaoTitulo}>Hashes de Integridade (SHA-256)</h2>
+                <div className={styles.blockchainBox}>
+                  {obra.hashObra && (
+                    <div className={styles.hashRow}>
+                      <span className={styles.hashLabel}>Obra</span>
+                      <span className={styles.hashValue} style={{ fontSize: '0.75em', wordBreak: 'break-all' }}>{obra.hashObra}</span>
+                    </div>
+                  )}
+                  {obra.hashLetra && (
+                    <>
+                      <div className={styles.divider} />
+                      <div className={styles.hashRow}>
+                        <span className={styles.hashLabel}>Letra</span>
+                        <span className={styles.hashValue} style={{ fontSize: '0.75em', wordBreak: 'break-all' }}>{obra.hashLetra}</span>
+                      </div>
+                    </>
+                  )}
+                  {obra.hashIdentidade && (
+                    <>
+                      <div className={styles.divider} />
+                      <div className={styles.hashRow}>
+                        <span className={styles.hashLabel}>Identidade</span>
+                        <span className={styles.hashValue} style={{ fontSize: '0.75em', wordBreak: 'break-all' }}>{obra.hashIdentidade}</span>
+                      </div>
+                    </>
+                  )}
+                </div>
+              </section>
+            )}
+
             {/* Blockchain */}
             <section className={styles.secao}>
               <h2 className={styles.secaoTitulo}>Prova na Blockchain</h2>
@@ -169,15 +236,10 @@ export default function Verificar() {
                 </div>
                 <div className={styles.hashRow}>
                   <span className={styles.hashLabel}>Rede</span>
-                  <span className={styles.hashValue}>Ethereum Sepolia</span>
+                  <span className={styles.hashValue}>Ethereum Mainnet</span>
                 </div>
                 {obra.etherscanUrl && (
-                  <a
-                    href={obra.etherscanUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={styles.btnLink}
-                  >
+                  <a href={obra.etherscanUrl} target="_blank" rel="noopener noreferrer" className={styles.btnLink}>
                     🔗 Verificar no Etherscan
                   </a>
                 )}
