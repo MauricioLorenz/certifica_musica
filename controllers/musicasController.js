@@ -1,7 +1,6 @@
 const { client } = require('../db/turso');
 const ethereumService = require('../services/ethereumService');
 const lighthouseService = require('../services/lighthouseService');
-const path = require('path');
 
 const toObj = (row) => ({
   id: row.id,
@@ -47,15 +46,11 @@ exports.criarMusica = async (req, res) => {
     const arquivos = req.files || {};
     let cid = null, cidLetra = null, cidIdentidade = null, cidComplementar = null;
 
-    const UPLOADS_DIR = process.env.NODE_ENV === 'production'
-      ? '/tmp'
-      : path.join(__dirname, '../uploads');
-
     const uploadSe = async (campo) => {
-      if (!arquivos[campo]?.[0]) return null;
-      const filePath = path.join(UPLOADS_DIR, arquivos[campo][0].filename);
+      const file = arquivos[campo]?.[0];
+      if (!file) return null;
       console.log(`📤 Enviando ${campo} para IPFS...`);
-      const r = await lighthouseService.uploadArquivo(filePath);
+      const r = await lighthouseService.uploadBuffer(file.buffer, file.originalname);
       return r.cid;
     };
 
