@@ -2,6 +2,7 @@ const crypto = require('crypto');
 const { client } = require('../db/turso');
 const ethereumService = require('../services/ethereumService');
 const ipfsService = require('../services/lighthouseService');
+const creditosService = require('../services/creditosService');
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -56,6 +57,18 @@ exports.criarMusica = async (req, res) => {
 
     if (!titulo) return res.status(400).json({ erro: 'Título é obrigatório' });
     if (!termoAceito) return res.status(400).json({ erro: 'Aceite o termo de declaração' });
+
+    // ── 0. Gate de crédito ────────────────────────────────────────────────────
+    const usuario_id_gate = req.usuario?.id;
+    if (!usuario_id_gate) return res.status(401).json({ erro: 'Não autenticado' });
+
+    const saldoAtual = await creditosService.getSaldo(usuario_id_gate);
+    if (saldoAtual < 1) {
+      return res.status(402).json({
+        erro: 'Saldo insuficiente. Adquira créditos para certificar obras.',
+        code: 'SALDO_INSUFICIENTE',
+      });
+    }
 
     const autoresArr = typeof autores === 'string'
       ? JSON.parse(autores)
@@ -197,6 +210,9 @@ exports.criarMusica = async (req, res) => {
       args: [id],
     });
     const musica = toObj(result.rows[0]);
+
+    // ── 7. Consome 1 crédito (somente após sucesso total) ─────────────────────
+    await creditosService.consumirCredito(usuario_id_gate, id);
 
     console.log(`✅ NFT mintado | tokenId: ${tokenId} | tx: ${txHash}`);
 

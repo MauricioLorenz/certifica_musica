@@ -1,9 +1,102 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
-import { musicasAPI } from '../services/api'
+import { loadStripe } from '@stripe/stripe-js'
+import { Elements, CardElement, useStripe, useElements } from '@stripe/react-stripe-js'
+import { musicasAPI, creditosAPI } from '../services/api'
 import { gerarComprovante } from '../services/gerarComprovante'
 import { useAuth } from '../context/AuthContext'
 import styles from './Dashboard.module.css'
+
+const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || '')
+
+const CARD_STYLE = {
+  style: {
+    base: { color: '#e2e8f0', fontFamily: 'Inter, sans-serif', fontSize: '15px', '::placeholder': { color: '#64748b' } },
+    invalid: { color: '#f87171' },
+  },
+}
+
+function ModalComprarCredito({ onFechar, onSucesso }) {
+  const stripe = useStripe()
+  const elements = useElements()
+  const [carregando, setCarregando] = useState(false)
+  const [erro, setErro] = useState('')
+  const [codigo, setCodigo] = useState('')
+  const [loadingVoucher, setLoadingVoucher] = useState(false)
+  const [erroVoucher, setErroVoucher] = useState('')
+
+  const pagar = async () => {
+    if (!stripe || !elements) return
+    setCarregando(true); setErro('')
+    try {
+      const { data } = await creditosAPI.criarIntencao()
+      const result = await stripe.confirmCardPayment(data.clientSecret, {
+        payment_method: { card: elements.getElement(CardElement) },
+      })
+      if (result.error) { setErro(result.error.message); setCarregando(false); return }
+      let tentativas = 0
+      const poll = async () => {
+        tentativas++
+        const r = await creditosAPI.saldo().catch(() => null)
+        if (r?.data?.saldo >= 1) { onSucesso(); return }
+        if (tentativas < 6) setTimeout(poll, 1500)
+        else { setErro('Crédito em processamento. Aguarde alguns instantes.'); setCarregando(false) }
+      }
+      poll()
+    } catch (err) {
+      setErro(err.response?.data?.erro || 'Erro ao processar')
+      setCarregando(false)
+    }
+  }
+
+  const resgatarVoucher = async () => {
+    if (!codigo.trim()) return
+    setLoadingVoucher(true); setErroVoucher('')
+    try {
+      await creditosAPI.resgatarVoucher(codigo.trim())
+      onSucesso()
+    } catch (err) {
+      setErroVoucher(err.response?.data?.erro || 'Voucher inválido')
+    } finally { setLoadingVoucher(false) }
+  }
+
+  return (
+    <div className={styles.modalOverlay} onClick={onFechar}>
+      <div className={styles.modal} onClick={e => e.stopPropagation()}>
+        <div className={styles.modalHeader}>
+          <h3>Adquirir Crédito</h3>
+          <button className={styles.modalClose} onClick={onFechar}>✕</button>
+        </div>
+        <p className={styles.modalSub}>1 crédito = R$40,00 = 1 certificação na blockchain</p>
+
+        <div className={styles.stripeField}>
+          <CardElement options={CARD_STYLE} />
+        </div>
+        {erro && <p className={styles.erroMsg}>{erro}</p>}
+        <button className={styles.btnPagar} onClick={pagar} disabled={carregando || !stripe}>
+          {carregando ? 'Processando...' : 'Pagar R$40,00'}
+        </button>
+
+        <div className={styles.divider} />
+
+        <p className={styles.modalSub}>Ou resgate um voucher:</p>
+        <div className={styles.voucherRow}>
+          <input
+            className={styles.voucherInput}
+            placeholder="CÓDIGO DO VOUCHER"
+            value={codigo}
+            onChange={e => setCodigo(e.target.value.toUpperCase())}
+            onKeyDown={e => e.key === 'Enter' && resgatarVoucher()}
+          />
+          <button className={styles.btnVoucher} onClick={resgatarVoucher} disabled={loadingVoucher}>
+            {loadingVoucher ? '...' : 'Resgatar'}
+          </button>
+        </div>
+        {erroVoucher && <p className={styles.erroMsg}>{erroVoucher}</p>}
+      </div>
+    </div>
+  )
+}
 
 export default function Dashboard() {
   const navigate = useNavigate()
@@ -13,6 +106,8 @@ export default function Dashboard() {
   const [busca, setBusca] = useState('')
   const [deletando, setDeletando] = useState(null)
   const [baixando, setBaixando] = useState(null)
+  const [saldo, setSaldo] = useState(null)
+  const [modalCredito, setModalCredito] = useState(false)
 
   const carregar = () => {
     setLoading(true)
@@ -22,7 +117,14 @@ export default function Dashboard() {
       .finally(() => setLoading(false))
   }
 
-  useEffect(() => { if (isAuth) carregar(); else setLoading(false) }, [isAuth])
+  const carregarSaldo = () => {
+    creditosAPI.saldo().then(r => setSaldo(r.data.saldo)).catch(() => setSaldo(0))
+  }
+
+  useEffect(() => {
+    if (isAuth) { carregar(); carregarSaldo() }
+    else setLoading(false)
+  }, [isAuth])
 
   const baixarComprovante = async (musica) => {
     setBaixando(musica.id)
@@ -93,7 +195,29 @@ export default function Dashboard() {
             </div>
             <div className={styles.statLabel}>Com TxHash</div>
           </div>
+          <div className={styles.statCard} style={{ position: 'relative' }}>
+            <div className={styles.statNum} style={{ color: 'var(--accent-cyan)' }}>
+              {saldo === null ? '...' : saldo}
+            </div>
+            <div className={styles.statLabel}>Créditos</div>
+            <button
+              className={styles.btnComprarCredito}
+              onClick={() => setModalCredito(true)}
+            >
+              + Adquirir
+            </button>
+          </div>
         </div>
+
+        {/* Modal de crédito */}
+        {modalCredito && (
+          <Elements stripe={stripePromise}>
+            <ModalComprarCredito
+              onFechar={() => setModalCredito(false)}
+              onSucesso={() => { setModalCredito(false); carregarSaldo() }}
+            />
+          </Elements>
+        )}
 
         {/* Busca */}
         <div className={styles.searchBar}>

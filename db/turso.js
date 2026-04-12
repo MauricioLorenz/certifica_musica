@@ -80,6 +80,67 @@ const initDB = async () => {
       });
   }
 
+  // ── Coluna role em usuarios ───────────────────────────────────────────────────
+  await client
+    .execute(`ALTER TABLE usuarios ADD COLUMN role TEXT DEFAULT 'user'`)
+    .catch((e) => {
+      if (!e.message?.includes('duplicate column') && !e.message?.includes('already exists')) {
+        console.error('⚠️  Erro ao adicionar coluna role:', e.message);
+      }
+    });
+
+  // ── Tabela de saldo de créditos ───────────────────────────────────────────────
+  await client.execute(`
+    CREATE TABLE IF NOT EXISTS creditos_usuarios (
+      usuario_id   TEXT PRIMARY KEY,
+      saldo        INTEGER NOT NULL DEFAULT 0,
+      atualizadoEm TEXT
+    )
+  `);
+
+  // ── Log de movimentações de crédito ──────────────────────────────────────────
+  await client.execute(`
+    CREATE TABLE IF NOT EXISTS transacoes_creditos (
+      id         TEXT PRIMARY KEY,
+      usuario_id TEXT NOT NULL,
+      tipo       TEXT NOT NULL,
+      quantidade INTEGER NOT NULL,
+      referencia TEXT,
+      criadoEm   TEXT NOT NULL
+    )
+  `);
+
+  // Índice único — garante idempotência em retentativas de webhook do Stripe
+  await client
+    .execute(`CREATE UNIQUE INDEX IF NOT EXISTS idx_transacoes_ref ON transacoes_creditos(referencia)`)
+    .catch(() => {});
+
+  // ── Vouchers criados pelo admin ───────────────────────────────────────────────
+  await client.execute(`
+    CREATE TABLE IF NOT EXISTS vouchers (
+      id         TEXT PRIMARY KEY,
+      codigo     TEXT NOT NULL UNIQUE,
+      creditos   INTEGER NOT NULL,
+      maxUsos    INTEGER NOT NULL DEFAULT 1,
+      usosAtuais INTEGER NOT NULL DEFAULT 0,
+      validade   TEXT,
+      criadoPor  TEXT NOT NULL,
+      criadoEm   TEXT NOT NULL,
+      ativo      INTEGER NOT NULL DEFAULT 1
+    )
+  `);
+
+  // ── Registro de resgates (impede resgate duplo pelo mesmo usuário) ────────────
+  await client.execute(`
+    CREATE TABLE IF NOT EXISTS vouchers_usados (
+      id         TEXT PRIMARY KEY,
+      voucher_id TEXT NOT NULL,
+      usuario_id TEXT NOT NULL,
+      criadoEm   TEXT NOT NULL,
+      UNIQUE(voucher_id, usuario_id)
+    )
+  `);
+
   console.log('✅ Turso: tabelas e colunas prontas');
 };
 

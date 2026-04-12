@@ -32,3 +32,16 @@ export const blockchainAPI = {
   balance: () => api.get('/blockchain/balance'),
   health: () => api.get('/health'),
 }
+
+export const creditosAPI = {
+  saldo: () => api.get('/creditos/saldo'),
+  resgatarVoucher: (codigo) => api.post('/creditos/resgatar-voucher', { codigo }),
+  criarIntencao: () => api.post('/pagamentos/criar-intencao'),
+}
+
+export const adminAPI = {
+  stats: () => api.get('/admin/stats'),
+  criarVoucher: (dados) => api.post('/admin/vouchers', dados),
+  listarVouchers: () => api.get('/admin/vouchers'),
+  toggleVoucher: (id) => api.patch(`/admin/vouchers/${id}`),
+}

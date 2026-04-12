@@ -5,7 +5,7 @@ const jwt = require('jsonwebtoken');
 const SECRET = process.env.JWT_SECRET || 'sound_ledger_secret_key_2024';
 
 const gerarToken = (u) =>
-  jwt.sign({ id: u.id, email: u.email, nome: u.nome }, SECRET, { expiresIn: '7d' });
+  jwt.sign({ id: u.id, email: u.email, nome: u.nome, role: u.role || 'user' }, SECRET, { expiresIn: '7d' });
 
 exports.registrar = async (req, res) => {
   try {
@@ -31,7 +31,13 @@ exports.registrar = async (req, res) => {
       args: [id, nome.trim(), email.toLowerCase().trim(), senhaHash, criadoEm],
     });
 
-    const usuario = { id, nome: nome.trim(), email: email.toLowerCase().trim() };
+    // Inicializa saldo de créditos zerado para o novo usuário
+    await client.execute({
+      sql: 'INSERT OR IGNORE INTO creditos_usuarios (usuario_id, saldo, atualizadoEm) VALUES (?, 0, ?)',
+      args: [id, criadoEm],
+    });
+
+    const usuario = { id, nome: nome.trim(), email: email.toLowerCase().trim(), role: 'user' };
     res.status(201).json({ success: true, token: gerarToken(usuario), usuario });
   } catch (err) {
     console.error('❌ Erro ao registrar usuário:', err.message);
@@ -57,7 +63,7 @@ exports.login = async (req, res) => {
     if (!senhaOk)
       return res.status(401).json({ erro: 'E-mail ou senha incorretos' });
 
-    const usuario = { id: row.id, nome: row.nome, email: row.email };
+    const usuario = { id: row.id, nome: row.nome, email: row.email, role: row.role || 'user' };
     res.json({ success: true, token: gerarToken(usuario), usuario });
   } catch (err) {
     console.error('❌ Erro ao fazer login:', err.message);

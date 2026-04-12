@@ -13,6 +13,14 @@ const dbReady = initDB().catch((err) => {
   if (require.main === module) process.exit(1);
 });
 
+// ── Raw body para o webhook do Stripe (DEVE vir ANTES do express.json) ──────────
+// O Stripe verifica a assinatura usando o body bruto; após express.json() parseá-lo
+// a verificação falha. Capturamos o Buffer aqui e o expõe como req.rawBody.
+app.use('/api/pagamentos/webhook', express.raw({ type: 'application/json' }), (req, res, next) => {
+  req.rawBody = req.body; // Buffer
+  next();
+});
+
 // Middlewares
 const allowedOrigins = [
   'http://localhost:3000',
@@ -54,6 +62,9 @@ app.use(async (req, res, next) => {
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/musicas', require('./routes/musicas'));
 app.use('/api/blockchain', require('./routes/blockchain'));
+app.use('/api/pagamentos', require('./routes/pagamentos'));
+app.use('/api/creditos', require('./routes/creditos'));
+app.use('/api/admin', require('./routes/admin'));
 
 // Health check
 app.get('/api/health', (req, res) => {

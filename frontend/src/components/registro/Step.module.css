@@ -277,6 +277,118 @@
   color: var(--text-primary);
 }
 
+/* ── Créditos / Stripe ──────────────────────────────────────────────────────── */
+
+.creditoLoading {
+  padding: 16px;
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+.creditoBox {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  background: rgba(34, 197, 94, 0.08);
+  border: 1px solid rgba(34, 197, 94, 0.3);
+  border-radius: 12px;
+  padding: 18px 20px;
+}
+
+.creditoIcone { font-size: 22px; margin-top: 2px; }
+
+.creditoTitulo { font-size: 15px; font-weight: 600; color: var(--text-primary); }
+
+.creditoSub { font-size: 13px; color: var(--text-secondary); margin-top: 4px; }
+
+.semCredito { display: flex; flex-direction: column; gap: 16px; }
+
+.semCreditoMsg { font-size: 14px; color: var(--text-secondary); margin: 0; }
+
+.stripeWrap {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.stripeField {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 14px 16px;
+}
+
+.btnPagar {
+  background: var(--accent-cyan);
+  color: #0d0f14;
+  font-weight: 700;
+  font-size: 14px;
+  border: none;
+  border-radius: 9px;
+  padding: 13px 20px;
+  cursor: pointer;
+  transition: opacity 0.2s;
+  align-self: flex-start;
+}
+.btnPagar:disabled { opacity: 0.5; cursor: not-allowed; }
+.btnPagar:hover:not(:disabled) { opacity: 0.88; }
+
+.erroMsg { font-size: 13px; color: #f87171; margin: 0; }
+
+.voucherSection { display: flex; flex-direction: column; gap: 12px; }
+
+.btnToggleVoucher {
+  background: none;
+  border: 1px dashed var(--border);
+  border-radius: 8px;
+  color: var(--text-secondary);
+  font-size: 13px;
+  padding: 10px 16px;
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 0.2s, color 0.2s;
+}
+.btnToggleVoucher:hover { border-color: var(--border-cyan); color: var(--text-primary); }
+
+.voucherRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+.voucherInput {
+  flex: 1;
+  min-width: 180px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 11px 14px;
+  color: var(--text-primary);
+  font-size: 14px;
+  font-family: 'JetBrains Mono', monospace;
+  letter-spacing: 0.05em;
+}
+.voucherInput:focus { outline: none; border-color: var(--border-cyan); }
+
+.btnVoucher {
+  background: transparent;
+  border: 1px solid var(--border-cyan);
+  color: var(--accent-cyan);
+  font-weight: 600;
+  font-size: 13px;
+  border-radius: 8px;
+  padding: 11px 18px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.btnVoucher:hover:not(:disabled) { background: rgba(34, 211, 238, 0.08); }
+.btnVoucher:disabled { opacity: 0.4; cursor: not-allowed; }
+
 @media (max-width: 600px) {
   .grid2 { grid-template-columns: 1fr; }
   .fieldFull { grid-column: auto; }

@@ -98,7 +98,7 @@
 /* Stats */
 .statsRow {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 16px;
   margin-bottom: 32px;
 }
@@ -368,4 +368,120 @@
     justify-content: flex-end;
     gap: 8px;
   }
+
+  .statsRow { grid-template-columns: repeat(2, 1fr); }
 }
+
+/* ── Créditos / Modal ──────────────────────────────────────────────────────── */
+
+.btnComprarCredito {
+  display: block;
+  margin: 10px auto 0;
+  background: transparent;
+  border: 1px solid var(--border-cyan, #22d3ee55);
+  color: var(--accent-cyan);
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 7px;
+  padding: 5px 14px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.btnComprarCredito:hover { background: rgba(34, 211, 238, 0.08); }
+
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 24px;
+}
+
+.modal {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 28px;
+  width: 100%;
+  max-width: 440px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.modalHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.modalHeader h3 { font-size: 18px; font-weight: 700; }
+
+.modalClose {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 18px;
+  cursor: pointer;
+  line-height: 1;
+  padding: 4px;
+}
+.modalClose:hover { color: var(--text-primary); }
+
+.modalSub { font-size: 13px; color: var(--text-secondary); margin: 0; }
+
+.stripeField {
+  background: var(--bg-secondary, #1a1d27);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 14px 16px;
+}
+
+.btnPagar {
+  background: var(--accent-cyan);
+  color: #0d0f14;
+  font-weight: 700;
+  font-size: 14px;
+  border: none;
+  border-radius: 9px;
+  padding: 13px 20px;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+.btnPagar:disabled { opacity: 0.5; cursor: not-allowed; }
+.btnPagar:hover:not(:disabled) { opacity: 0.88; }
+
+.divider { height: 1px; background: var(--border); }
+
+.erroMsg { font-size: 13px; color: #f87171; margin: 0; }
+
+.voucherRow { display: flex; gap: 10px; }
+
+.voucherInput {
+  flex: 1;
+  background: var(--bg-secondary, #1a1d27);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 11px 14px;
+  color: var(--text-primary);
+  font-size: 14px;
+  font-family: 'JetBrains Mono', monospace;
+  letter-spacing: 0.05em;
+}
+.voucherInput:focus { outline: none; border-color: var(--border-cyan, #22d3ee55); }
+
+.btnVoucher {
+  background: transparent;
+  border: 1px solid var(--border-cyan, #22d3ee55);
+  color: var(--accent-cyan);
+  font-weight: 600;
+  font-size: 13px;
+  border-radius: 8px;
+  padding: 11px 18px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.btnVoucher:disabled { opacity: 0.4; cursor: not-allowed; }
+.btnVoucher:hover:not(:disabled) { background: rgba(34, 211, 238, 0.08); }

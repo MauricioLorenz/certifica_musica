@@ -6,6 +6,9 @@ import Dashboard from './pages/Dashboard'
 import Registrar from './pages/Registrar'
 import Verificar from './pages/Verificar'
 import Auth from './pages/Auth'
+import AdminGuard from './pages/admin/AdminGuard'
+import AdminDashboard from './pages/admin/AdminDashboard'
+import AdminVouchers from './pages/admin/AdminVouchers'
 import './App.css'
 
 function App() {
@@ -20,6 +23,10 @@ function App() {
           <Route path="/verificar" element={<Verificar />} />
           <Route path="/login" element={<Auth />} />
           <Route path="/cadastro" element={<Auth />} />
+          <Route path="/admin" element={<AdminGuard />}>
+            <Route path="dashboard" element={<AdminDashboard />} />
+            <Route path="vouchers" element={<AdminVouchers />} />
+          </Route>
         </Routes>
       </BrowserRouter>
     </AuthProvider>
