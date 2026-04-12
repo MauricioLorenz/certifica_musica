@@ -29,14 +29,35 @@ exports.criarIntencao = async (req, res) => {
 };
 
 // POST /api/pagamentos/webhook
-// IMPORTANTE: esta rota recebe raw body (configurado no server.js antes do express.json)
+// IMPORTANTE: No Vercel (serverless), o body pode chegar já parseado.
+// Tentamos usar req.rawBody (definido no server.js via express.raw),
+// com fallback para req.body caso seja Buffer ou string.
 exports.webhook = async (req, res) => {
   const sig = req.headers['stripe-signature'];
+
+  // Resolve o raw body para verificação da assinatura Stripe
+  let rawBody = req.rawBody;
+
+  if (!rawBody && req.body) {
+    if (Buffer.isBuffer(req.body)) {
+      rawBody = req.body;
+    } else if (typeof req.body === 'string') {
+      rawBody = Buffer.from(req.body, 'utf-8');
+    } else {
+      // Última opção: re-serializa o JSON (perde a assinatura — loga o aviso)
+      try {
+        rawBody = Buffer.from(JSON.stringify(req.body), 'utf-8');
+        console.warn('⚠️ Webhook: rawBody não disponível, usando JSON.stringify como fallback. A assinatura pode falhar.');
+      } catch (_) {
+        rawBody = Buffer.from('', 'utf-8');
+      }
+    }
+  }
 
   let event;
   try {
     event = stripe.webhooks.constructEvent(
-      req.rawBody,
+      rawBody,
       sig,
       process.env.STRIPE_WEBHOOK_SECRET
     );

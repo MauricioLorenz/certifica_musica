@@ -184,6 +184,11 @@ export default function Verificar() {
                       📋 Ver metadata no IPFS
                     </a>
                   )}
+                  {obra.metadataUrlFallback && (
+                    <a href={obra.metadataUrlFallback} target="_blank" rel="noopener noreferrer" className={styles.btnLink} style={{ marginTop: 6, opacity: 0.75, fontSize: '0.88em' }}>
+                      🔗 Metadata (ipfs.io)
+                    </a>
+                  )}
                   {obra.openseaUrl && (
                     <a href={obra.openseaUrl} target="_blank" rel="noopener noreferrer" className={styles.btnLink}>
                       🌊 Ver NFT no OpenSea

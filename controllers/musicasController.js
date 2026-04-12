@@ -221,9 +221,12 @@ exports.criarMusica = async (req, res) => {
       data: {
         ...musica,
         tokenURI,
+        // Gateway público primário (cloudflare) + fallback (ipfs.io)
         metadataUrl: ipfsService.getGatewayUrl(metadataCID),
+        metadataUrlFallback: `https://ipfs.io/ipfs/${metadataCID}`,
         cidUrl: cidObra ? ipfsService.getGatewayUrl(cidObra) : null,
-        openseaUrl: nftContractAddress
+        // OpenSea: usa o tokenId real retornado pelo contrato
+        openseaUrl: nftContractAddress && tokenId != null
           ? `https://opensea.io/assets/ethereum/${nftContractAddress}/${tokenId}`
           : null,
       },
@@ -327,8 +330,11 @@ exports.verificarObra = async (req, res) => {
         tokenId: m.tokenId,
         nftContractAddress: m.nftContractAddress,
         tokenURI: m.metadataCID ? `ipfs://${m.metadataCID}` : null,
+        // Gateways públicos para metadata — cloudflare primário, ipfs.io como fallback
         metadataUrl: m.metadataCID ? ipfsService.getGatewayUrl(m.metadataCID) : null,
-        openseaUrl: m.nftContractAddress && m.tokenId
+        metadataUrlFallback: m.metadataCID ? `https://ipfs.io/ipfs/${m.metadataCID}` : null,
+        // OpenSea — tokenId pode ser "0" (string), comparar com != null
+        openseaUrl: m.nftContractAddress && m.tokenId != null
           ? `https://opensea.io/assets/ethereum/${m.nftContractAddress}/${m.tokenId}`
           : null,
         // Arquivos

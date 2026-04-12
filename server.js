@@ -13,11 +13,15 @@ const dbReady = initDB().catch((err) => {
   if (require.main === module) process.exit(1);
 });
 
-// ── Raw body para o webhook do Stripe (DEVE vir ANTES do express.json) ──────────
-// O Stripe verifica a assinatura usando o body bruto; após express.json() parseá-lo
-// a verificação falha. Capturamos o Buffer aqui e o expõe como req.rawBody.
-app.use('/api/pagamentos/webhook', express.raw({ type: 'application/json' }), (req, res, next) => {
-  req.rawBody = req.body; // Buffer
+// ── Raw body para o webhook do Stripe ────────────────────────────────────────
+// Estratégia dupla para funcionar tanto no servidor local quanto na Vercel (serverless):
+// 1. express.raw() captura o body como Buffer na rota do webhook (servidor local)
+// 2. O verify callback do express.json() salva req.rawBody em TODAS as rotas,
+//    garantindo que o webhook tenha acesso ao body bruto mesmo no ambiente serverless
+app.use('/api/pagamentos/webhook', express.raw({ type: '*/*' }), (req, res, next) => {
+  if (Buffer.isBuffer(req.body)) {
+    req.rawBody = req.body;
+  }
   next();
 });
 
@@ -38,7 +42,15 @@ app.use(cors({
   },
   credentials: true,
 }));
-app.use(express.json({ limit: '50mb' }));
+
+// express.json com verify callback — salva rawBody para o webhook Stripe
+app.use(express.json({
+  limit: '50mb',
+  verify: (req, _res, buf) => {
+    // Disponível para qualquer rota que precise do body bruto
+    req.rawBody = buf;
+  },
+}));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
 // Pasta uploads (apenas em desenvolvimento — na Vercel usa /tmp)

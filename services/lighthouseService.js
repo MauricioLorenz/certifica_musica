@@ -64,8 +64,15 @@ class IpfsService {
     }
   }
 
-  // URL pública de acesso ao arquivo via gateway Pinata
+  // URL pública de acesso ao arquivo via gateway IPFS público
+  // Usa o gateway do cloudflare (público, sem autenticação)
+  // Fallback: https://ipfs.io/ipfs/${cid}
   getGatewayUrl(cid) {
+    return `https://cloudflare-ipfs.com/ipfs/${cid}`;
+  }
+
+  // URL alternativa via gateway.pinata.cloud (requer autenticação)
+  getPrivateGatewayUrl(cid) {
     return `https://gateway.pinata.cloud/ipfs/${cid}`;
   }
 }
