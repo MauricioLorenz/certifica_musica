@@ -123,3 +123,62 @@ exports.listarUsuarios = async (req, res) => {
     res.status(500).json({ erro: err.message });
   }
 };
+
+// PUT /api/admin/usuarios/:id
+exports.editarUsuario = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { nome, email } = req.body;
+
+    if (!nome?.trim() || !email?.trim()) {
+      return res.status(400).json({ erro: 'Nome e Email são obrigatórios' });
+    }
+
+    const emailLower = email.toLowerCase().trim();
+
+    // Verifica se já existe outro usuário com o mesmo email
+    const existe = await client.execute({
+      sql: 'SELECT id FROM usuarios WHERE email = ? AND id != ?',
+      args: [emailLower, id],
+    });
+
+    if (existe.rows.length) {
+      return res.status(409).json({ erro: 'E-mail já está em uso por outro cliente' });
+    }
+
+    await client.execute({
+      sql: 'UPDATE usuarios SET nome = ?, email = ? WHERE id = ?',
+      args: [nome.trim(), emailLower, id],
+    });
+
+    res.json({ success: true, mensagem: 'Usuário atualizado com sucesso' });
+  } catch (err) {
+    res.status(500).json({ erro: err.message });
+  }
+};
+
+// DELETE /api/admin/usuarios/:id
+exports.excluirUsuario = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Impede o master admin de ser deletado acidentalmente
+    const target = await client.execute({
+      sql: 'SELECT email FROM usuarios WHERE id = ?',
+      args: [id]
+    });
+    if (target.rows.length && target.rows[0].email === 'mauriciolorenzinvest@gmail.com') {
+      return res.status(403).json({ erro: 'O admin principal não pode ser excluído.' });
+    }
+
+    // Exclusão em cascata (musicas, transacoes_creditos e depois creditos e o usuario si)
+    await client.execute({ sql: 'DELETE FROM musicas WHERE usuario_id = ?', args: [id] });
+    await client.execute({ sql: 'DELETE FROM transacoes_creditos WHERE usuario_id = ?', args: [id] });
+    await client.execute({ sql: 'DELETE FROM creditos_usuarios WHERE usuario_id = ?', args: [id] });
+    await client.execute({ sql: 'DELETE FROM usuarios WHERE id = ?', args: [id] });
+
+    res.json({ success: true, mensagem: 'Usuário e dados vinculados foram removidos' });
+  } catch (err) {
+    res.status(500).json({ erro: err.message });
+  }
+};

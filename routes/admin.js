@@ -11,5 +11,7 @@ router.post('/vouchers', ctrl.criarVoucher);
 router.get('/vouchers', ctrl.listarVouchers);
 router.patch('/vouchers/:id', ctrl.toggleVoucher);
 router.get('/usuarios', ctrl.listarUsuarios);
+router.put('/usuarios/:id', ctrl.editarUsuario);
+router.delete('/usuarios/:id', ctrl.excluirUsuario);
 
 module.exports = router;
