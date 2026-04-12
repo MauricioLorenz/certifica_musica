@@ -41,6 +41,7 @@ export const creditosAPI = {
 
 export const adminAPI = {
   stats: () => api.get('/admin/stats'),
+  listarUsuarios: () => api.get('/admin/usuarios'),
   criarVoucher: (dados) => api.post('/admin/vouchers', dados),
   listarVouchers: () => api.get('/admin/vouchers'),
   toggleVoucher: (id) => api.patch(`/admin/vouchers/${id}`),

@@ -10,5 +10,6 @@ router.get('/stats', ctrl.getStats);
 router.post('/vouchers', ctrl.criarVoucher);
 router.get('/vouchers', ctrl.listarVouchers);
 router.patch('/vouchers/:id', ctrl.toggleVoucher);
+router.get('/usuarios', ctrl.listarUsuarios);
 
 module.exports = router;

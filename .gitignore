@@ -67,3 +67,6 @@ gitignore
 # Lock files (opcional — remova estas linhas se quiser commitar)
 package-lock.json
 frontend/package-lock.json
+
+# Scratch
+scratch/

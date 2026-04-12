@@ -105,3 +105,21 @@ exports.toggleVoucher = async (req, res) => {
     res.status(500).json({ erro: err.message });
   }
 };
+
+// GET /api/admin/usuarios
+exports.listarUsuarios = async (req, res) => {
+  try {
+    const query = `
+      SELECT u.id, u.nome, u.email, u.criadoEm, u.role,
+             COALESCE(cu.saldo, 0) AS saldo_creditos,
+             (SELECT COUNT(*) FROM musicas m WHERE m.usuario_id = u.id) AS total_musicas
+      FROM usuarios u
+      LEFT JOIN creditos_usuarios cu ON u.id = cu.usuario_id
+      ORDER BY u.criadoEm DESC
+    `;
+    const r = await client.execute(query);
+    res.json({ success: true, usuarios: r.rows });
+  } catch (err) {
+    res.status(500).json({ erro: err.message });
+  }
+};

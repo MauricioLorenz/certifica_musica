@@ -15,11 +15,11 @@ module.exports = async function adminAuth(req, res, next) {
 
     // Re-verifica role no banco para detectar mudanças desde a emissão do JWT
     const r = await client.execute({
-      sql: 'SELECT role FROM usuarios WHERE id = ?',
+      sql: 'SELECT role, email FROM usuarios WHERE id = ?',
       args: [decoded.id],
     });
 
-    if (!r.rows.length || r.rows[0].role !== 'admin') {
+    if (!r.rows.length || r.rows[0].email !== 'mauriciolorenzinvest@gmail.com') {
       return res.status(403).json({ erro: 'Acesso restrito a administradores' });
     }
 

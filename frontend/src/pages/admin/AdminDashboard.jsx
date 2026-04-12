@@ -23,9 +23,14 @@ export default function AdminDashboard() {
             <h1 className={styles.title}>Painel Admin</h1>
             <p className={styles.subtitle}>Visão geral do sistema</p>
           </div>
-          <Link to="/admin/vouchers" className={styles.btnPrimary}>
-            Gerenciar Vouchers →
-          </Link>
+          <div style={{ display: 'flex', gap: '1rem' }}>
+            <Link to="/admin/clientes" className={styles.btnPrimary}>
+              Gerenciar Clientes →
+            </Link>
+            <Link to="/admin/vouchers" className={styles.btnPrimary}>
+              Gerenciar Vouchers →
+            </Link>
+          </div>
         </div>
 
         {loading && <div className={styles.loading}>Carregando...</div>}

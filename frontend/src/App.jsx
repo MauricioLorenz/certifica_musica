@@ -9,6 +9,7 @@ import Auth from './pages/Auth'
 import AdminGuard from './pages/admin/AdminGuard'
 import AdminDashboard from './pages/admin/AdminDashboard'
 import AdminVouchers from './pages/admin/AdminVouchers'
+import AdminClientes from './pages/admin/AdminClientes'
 import './App.css'
 
 function App() {
@@ -26,6 +27,7 @@ function App() {
           <Route path="/admin" element={<AdminGuard />}>
             <Route path="dashboard" element={<AdminDashboard />} />
             <Route path="vouchers" element={<AdminVouchers />} />
+            <Route path="clientes" element={<AdminClientes />} />
           </Route>
         </Routes>
       </BrowserRouter>
