@@ -13,7 +13,7 @@ const NAV_LINKS = [
 export default function Navbar() {
   const { pathname } = useLocation()
   const navigate = useNavigate()
-  const { user, logout, isAuth } = useAuth()
+  const { user, logout, isAuth, isAdmin } = useAuth()
   const [open, setOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
 
@@ -60,6 +60,13 @@ export default function Navbar() {
               </Link>
             </li>
           )}
+          {isAdmin && (
+            <li>
+              <Link to="/admin/dashboard" className={`${styles.navLink} ${pathname.startsWith('/admin') ? styles.active : ''}`} style={{ color: '#fbbf24' }}>
+                Admin
+              </Link>
+            </li>
+          )}
         </ul>
 
         {/* Desktop actions */}
@@ -95,6 +102,9 @@ export default function Navbar() {
         ))}
         {isAuth && (
           <Link to="/dashboard" className={styles.drawerLink}>Dashboard</Link>
+        )}
+        {isAdmin && (
+          <Link to="/admin/dashboard" className={styles.drawerLink} style={{ color: '#fbbf24' }}>Admin</Link>
         )}
         <div className={styles.drawerDivider} />
         <Link to="/registrar" className={styles.drawerBtn}>+ Certificar Música</Link>
