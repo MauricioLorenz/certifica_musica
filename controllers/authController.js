@@ -103,8 +103,9 @@ exports.solicitarReset = async (req, res) => {
     await emailService.enviarResetSenha(email.toLowerCase().trim(), token);
     res.json(resposta);
   } catch (err) {
-    console.error('❌ Erro ao solicitar reset:', err.message);
-    res.status(500).json({ erro: 'Erro ao enviar e-mail. Tente novamente.' });
+    const detalhe = err.response?.data ? JSON.stringify(err.response.data) : err.message;
+    console.error('❌ Erro ao solicitar reset:', detalhe);
+    res.status(500).json({ erro: `Erro ao enviar e-mail: ${detalhe}` });
   }
 };
 
