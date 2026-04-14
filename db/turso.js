@@ -1,11 +1,17 @@
 const { createClient } = require('@libsql/client');
 
-const client = createClient({
-  url: process.env.TURSO_DATABASE_URL,
-  authToken: process.env.TURSO_AUTH_TOKEN,
-});
+let client;
 
 const initDB = async () => {
+  if (!process.env.TURSO_DATABASE_URL) {
+    throw new Error('TURSO_DATABASE_URL não configurado. Defina as variáveis de ambiente na Vercel.');
+  }
+
+  client = createClient({
+    url: process.env.TURSO_DATABASE_URL,
+    authToken: process.env.TURSO_AUTH_TOKEN,
+  });
+
   // Tabela de usuários
   await client.execute(`
     CREATE TABLE IF NOT EXISTS usuarios (
@@ -144,4 +150,10 @@ const initDB = async () => {
   console.log('✅ Turso: tabelas e colunas prontas');
 };
 
-module.exports = { client, initDB };
+module.exports = {
+  get client() {
+    if (!client) throw new Error('Banco de dados não inicializado. Aguarde o servidor iniciar.');
+    return client;
+  },
+  initDB,
+};

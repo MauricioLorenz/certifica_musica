@@ -8,8 +8,10 @@ const { initDB } = require('./db/turso');
 const app = express();
 
 // Inicializa o banco imediatamente (antes de qualquer rota)
+let dbError = null;
 const dbReady = initDB().catch((err) => {
   console.error('❌ Falha ao inicializar Turso:', err.message);
+  dbError = err;
   if (require.main === module) process.exit(1);
 });
 
@@ -63,6 +65,9 @@ if (process.env.NODE_ENV !== 'production') {
 app.use(async (req, res, next) => {
   try {
     await dbReady;
+    if (dbError) {
+      return res.status(503).json({ erro: `Banco de dados não disponível: ${dbError.message}` });
+    }
     next();
   } catch (err) {
     console.error('❌ Banco não disponível:', err.message);
