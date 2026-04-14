@@ -9,6 +9,9 @@ export default function Auth() {
   const [tab, setTab] = useState(params.get('tab') === 'cadastro' ? 'cadastro' : 'login')
   const [loading, setLoading] = useState(false)
   const [erro, setErro] = useState('')
+  const [esqueci, setEsqueci] = useState(false)
+  const [esqueciEmail, setEsqueciEmail] = useState('')
+  const [esqueciSucesso, setEsqueciSucesso] = useState(false)
   const { login } = useAuth()
   const navigate = useNavigate()
 
@@ -53,7 +56,63 @@ export default function Auth() {
     }
   }
 
-  const switchTab = (t) => { setTab(t); setErro('') }
+  const switchTab = (t) => { setTab(t); setErro(''); setEsqueci(false); setEsqueciSucesso(false) }
+
+  const handleEsqueci = async (e) => {
+    e.preventDefault()
+    setErro('')
+    if (!esqueciEmail) return setErro('Informe seu e-mail')
+    setLoading(true)
+    try {
+      await authAPI.solicitarReset(esqueciEmail)
+      setEsqueciSucesso(true)
+    } catch (err) {
+      setErro(err.response?.data?.erro || 'Erro ao enviar e-mail. Tente novamente.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  if (esqueci) {
+    return (
+      <main className={styles.main}>
+        <div className={styles.card}>
+          <Link to="/" className={styles.brand}>
+            Certifica<span className={styles.brandAccent}>Música</span>
+          </Link>
+
+          {esqueciSucesso ? (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 16, textAlign: 'center' }}>
+              <p style={{ fontSize: 32 }}>📬</p>
+              <p style={{ color: 'var(--text-primary)', fontWeight: 700, margin: 0 }}>E-mail enviado!</p>
+              <p style={{ color: 'var(--text-muted)', fontSize: 13, margin: 0 }}>
+                Se esse e-mail estiver cadastrado, você receberá um link em instantes. Verifique sua caixa de entrada e o spam.
+              </p>
+              <button className={styles.btnSubmit} onClick={() => { setEsqueci(false); setEsqueciSucesso(false) }}>
+                Voltar ao login
+              </button>
+            </div>
+          ) : (
+            <form className={styles.form} onSubmit={handleEsqueci}>
+              <p style={{ color: 'var(--text-muted)', fontSize: 13, margin: 0 }}>
+                Informe seu e-mail e enviaremos um link para redefinir sua senha.
+              </p>
+              <Field label="E-mail" type="email" value={esqueciEmail} onChange={setEsqueciEmail} placeholder="seu@email.com" />
+              {erro && <p className={styles.erro}>{erro}</p>}
+              <button className={styles.btnSubmit} disabled={loading}>
+                {loading ? <span className={styles.spinner} /> : 'Enviar link de redefinição'}
+              </button>
+              <p className={styles.switchText}>
+                <button type="button" className={styles.switchLink} onClick={() => { setEsqueci(false); setErro('') }}>
+                  ← Voltar ao login
+                </button>
+              </p>
+            </form>
+          )}
+        </div>
+      </main>
+    )
+  }
 
   return (
     <main className={styles.main}>
@@ -90,6 +149,11 @@ export default function Auth() {
               {loading ? <span className={styles.spinner} /> : 'Entrar'}
             </button>
 
+            <p className={styles.switchText}>
+              <button type="button" className={styles.switchLink} onClick={() => { setEsqueci(true); setErro('') }}>
+                Esqueci minha senha
+              </button>
+            </p>
             <p className={styles.switchText}>
               Não tem conta?{' '}
               <button type="button" className={styles.switchLink} onClick={() => switchTab('cadastro')}>

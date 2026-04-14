@@ -15,6 +15,8 @@ export const authAPI = {
   registrar: (dados) => api.post('/auth/registrar', dados),
   login: (dados) => api.post('/auth/login', dados),
   me: () => api.get('/auth/me'),
+  solicitarReset: (email) => api.post('/auth/solicitar-reset', { email }),
+  redefinirSenha: (token, novaSenha) => api.post('/auth/redefinir-senha', { token, novaSenha }),
 }
 
 export const musicasAPI = {

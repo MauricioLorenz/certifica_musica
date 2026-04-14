@@ -147,6 +147,17 @@ const initDB = async () => {
     )
   `);
 
+  // ── Tokens de redefinição de senha ───────────────────────────────────────────
+  await client.execute(`
+    CREATE TABLE IF NOT EXISTS reset_tokens (
+      id       TEXT PRIMARY KEY,
+      email    TEXT NOT NULL,
+      token    TEXT NOT NULL UNIQUE,
+      expiraEm TEXT NOT NULL,
+      usado    INTEGER NOT NULL DEFAULT 0
+    )
+  `);
+
   console.log('✅ Turso: tabelas e colunas prontas');
 };
 
