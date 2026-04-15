@@ -2,7 +2,7 @@ require('dotenv').config();
 const bcrypt = require('bcryptjs');
 const { createClient } = require('@libsql/client');
 
-const NOVA_SENHA = 'admin123'; // troque aqui antes de rodar
+const NOVA_SENHA = 'sucess10';
 
 async function resetar() {
   const client = createClient({
